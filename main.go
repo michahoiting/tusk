@@ -2,10 +2,8 @@ package main
 
 import (
 	"os"
-	"os/exec"
-	"syscall"
 
-	"github.com/rliebz/tusk/appcli"
+	"github.com/rliebz/tusk/cobracli"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -15,51 +13,57 @@ var version = "dev"
 func main() {
 	defer gracefulRecover()
 
-	args := os.Args
-	if args[len(args)-1] == appcli.CompletionFlag {
-		ui.Verbosity = ui.VerbosityLevelSilent
-	}
-
-	meta, err := appcli.GetConfigMetadata(args)
-	if err != nil {
+	cmd := cobracli.CreateCommand()
+	if err := cmd.Execute(); err != nil {
 		ui.Error(err)
 		os.Exit(1)
 	}
 
-	if ui.Verbosity != ui.VerbosityLevelSilent {
-		ui.Verbosity = meta.Verbosity
-	}
+	// args := os.Args
+	// if args[len(args)-1] == appcli.CompletionFlag {
+	// 	ui.Verbosity = ui.VerbosityLevelSilent
+	// }
 
-	if err = os.Chdir(meta.Directory); err != nil {
-		ui.Error(err)
-		os.Exit(1)
-	}
+	// meta, err := appcli.GetConfigMetadata(args)
+	// if err != nil {
+	// 	ui.Error(err)
+	// 	os.Exit(1)
+	// }
 
-	if meta.PrintVersion && !meta.PrintHelp {
-		ui.Println(version)
-		os.Exit(0)
-	}
+	// if ui.Verbosity != ui.VerbosityLevelSilent {
+	// 	ui.Verbosity = meta.Verbosity
+	// }
 
-	app, err := appcli.NewApp(os.Args, meta)
-	if err != nil {
-		ui.Error(err)
-		os.Exit(1)
-	}
+	// if err = os.Chdir(meta.Directory); err != nil {
+	// 	ui.Error(err)
+	// 	os.Exit(1)
+	// }
 
-	if meta.PrintHelp {
-		appcli.ShowAppHelp(app)
-		os.Exit(0)
-	}
+	// if meta.PrintVersion && !meta.PrintHelp {
+	// 	ui.Println(version)
+	// 	os.Exit(0)
+	// }
 
-	if err := app.Run(os.Args); err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			ws := exitErr.Sys().(syscall.WaitStatus)
-			os.Exit(ws.ExitStatus())
-		} else {
-			ui.Error(err)
-			os.Exit(1)
-		}
-	}
+	// app, err := appcli.NewApp(os.Args, meta)
+	// if err != nil {
+	// 	ui.Error(err)
+	// 	os.Exit(1)
+	// }
+
+	// if meta.PrintHelp {
+	// 	appcli.ShowAppHelp(app)
+	// 	os.Exit(0)
+	// }
+
+	// if err := app.Run(os.Args); err != nil {
+	// 	if exitErr, ok := err.(*exec.ExitError); ok {
+	// 		ws := exitErr.Sys().(syscall.WaitStatus)
+	// 		os.Exit(ws.ExitStatus())
+	// 	} else {
+	// 		ui.Error(err)
+	// 		os.Exit(1)
+	// 	}
+	// }
 }
 
 func gracefulRecover() {
