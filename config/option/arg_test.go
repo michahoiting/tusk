@@ -27,7 +27,11 @@ func TestEvaluate_specified(t *testing.T) {
 	arg := Arg{
 		Passed: expected,
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"wrong", expected, "other"},
+			ValuesAllowed: marshal.ListMap{
+				"wrong":  "wrong",
+				expected: expected,
+				"other":  "other",
+			},
 		},
 	}
 
@@ -46,7 +50,10 @@ func TestEvaluate_unspecified(t *testing.T) {
 	arg := Arg{
 		Passed: passed,
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"wrong", "other"},
+			ValuesAllowed: marshal.ListMap{
+				"wrong": "wrong",
+				"other": "other",
+			},
 		},
 	}
 

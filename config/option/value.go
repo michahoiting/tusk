@@ -85,7 +85,7 @@ func (vl *ValueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // valueWithList is a list of allowable values for an option or argument.
 type valueWithList struct {
-	ValuesAllowed marshal.StringList `yaml:"values"`
+	ValuesAllowed marshal.ListMap `yaml:"values"`
 }
 
 func (v *valueWithList) validateSpecified(value, descriptor string) error {
@@ -93,14 +93,17 @@ func (v *valueWithList) validateSpecified(value, descriptor string) error {
 		return nil
 	}
 
-	for _, expected := range v.ValuesAllowed {
-		if value == expected {
-			return nil
+	if _, ok := v.ValuesAllowed[value]; !ok {
+		values := make([]string, 0, len(v.ValuesAllowed))
+		for value := range v.ValuesAllowed {
+			values = append(values, value)
 		}
+
+		return fmt.Errorf(
+			`value %q for %s must be one of: %s`,
+			value, descriptor, strings.Join(values, ", "),
+		)
 	}
 
-	return fmt.Errorf(
-		`value %q for %s must be one of %v`,
-		value, descriptor, v.ValuesAllowed,
-	)
+	return nil
 }

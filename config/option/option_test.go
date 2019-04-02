@@ -207,7 +207,7 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 	expected := ""
 	option := Option{
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"red", "herring"},
+			ValuesAllowed: marshal.ListMap{"red": "red", "herring": "herring"},
 		},
 	}
 
@@ -229,7 +229,11 @@ func TestOption_Evaluate_values_with_passed(t *testing.T) {
 	option := Option{
 		Passed: expected,
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
+			ValuesAllowed: marshal.ListMap{
+				"red":     "red",
+				expected:  expected,
+				"herring": "herring",
+			},
 		},
 	}
 
@@ -253,7 +257,11 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 	option := Option{
 		Environment: envVar,
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
+			ValuesAllowed: marshal.ListMap{
+				"red":     "red",
+				expected:  expected,
+				"herring": "herring",
+			},
 		},
 	}
 
@@ -279,7 +287,11 @@ func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 	option := Option{
 		Passed: expected,
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+			ValuesAllowed: marshal.ListMap{
+				"bad":    "bad",
+				"values": "values",
+				"FOO":    "FOO",
+			},
 		},
 	}
 
@@ -298,7 +310,11 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 	option := Option{
 		Environment: envVar,
 		valueWithList: valueWithList{
-			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+			ValuesAllowed: marshal.ListMap{
+				"bad":    "bad",
+				"values": "values",
+				"FOO":    "FOO",
+			},
 		},
 	}
 
@@ -351,7 +367,10 @@ func TestOption_UnmarshalYAML(t *testing.T) {
 	expected := Option{
 		Usage: "foo",
 		valueWithList: valueWithList{
-			ValuesAllowed: []string{"foo", "bar"},
+			ValuesAllowed: marshal.ListMap{
+				"foo": "foo",
+				"bar": "bar",
+			},
 		},
 		Name: "",
 	}

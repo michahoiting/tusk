@@ -76,6 +76,44 @@ tasks:
 	},
 
 	{
+		"argument one of the values",
+		`
+tasks:
+  mytask:
+    args:
+      foo:
+        values: [foovalue]
+    run: echo ${foo}
+`,
+		[]string{"foovalue"},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+
+	{
+		"option one of the values",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        values: [foovalue]
+    run: echo ${foo}
+`,
+		[]string{},
+		map[string]string{
+			"foo": "foovalue",
+		},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+
+	{
 		"single task global interpolation",
 		`
 options:
@@ -828,6 +866,36 @@ tasks:
 `,
 		[]string{},
 		map[string]string{},
+		"mytask",
+	},
+	{
+		"argument not valid value",
+		`
+tasks:
+  mytask:
+    args:
+      foo:
+        values: [foovalue]
+    run: echo oops
+`,
+		[]string{"wrong"},
+		map[string]string{},
+		"mytask",
+	},
+	{
+		"option not valid value",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        values: [foovalue]
+    run: echo oops
+`,
+		[]string{},
+		map[string]string{
+			"foo": "wrong",
+		},
 		"mytask",
 	},
 	{
