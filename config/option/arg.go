@@ -25,11 +25,7 @@ func (a *Arg) Evaluate() (string, error) {
 		return "", errors.New("nil argument evaluated")
 	}
 
-	if err := a.validateSpecified(a.Passed, "argument "+a.Name); err != nil {
-		return "", err
-	}
-
-	return a.Passed, nil
+	return a.mappedValue(a.Passed, "argument "+a.Name)
 }
 
 // GetArgsWithOrder returns both the arg map and the ordered names.

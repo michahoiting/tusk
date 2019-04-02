@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/rliebz/tusk/config/marshal"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -80,5 +81,81 @@ func TestValueList_UnmarshalYAML(t *testing.T) {
 			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", v1[0].Value,
 		)
+	}
+}
+
+func TestValueWithList(t *testing.T) {
+	cases := []struct {
+		name    string
+		values  marshal.ListMap
+		value   string
+		expect  string
+		wantErr bool
+	}{
+		{
+			"nil-values",
+			nil,
+			"foo",
+			"foo",
+			false,
+		},
+		{
+			"no-values",
+			marshal.ListMap{},
+			"foo",
+			"foo",
+			false,
+		},
+		{
+			"unmapped-value",
+			marshal.ListMap{
+				"foo": "foo",
+				"bar": "bar",
+				"baz": "baz",
+			},
+			"foo",
+			"foo",
+			false,
+		},
+		{
+			"mapped-value",
+			marshal.ListMap{
+				"foo": "foovalue",
+				"bar": "barvalue",
+				"baz": "bazvalue",
+			},
+			"foo",
+			"foovalue",
+			false,
+		},
+		{
+			"bad-value",
+			marshal.ListMap{
+				"foo": "foovalue",
+				"bar": "barvalue",
+				"baz": "bazvalue",
+			},
+			"unknown",
+			"",
+			true,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			v := valueWithList{
+				ValuesAllowed: tt.values,
+			}
+
+			actual, err := v.mappedValue(tt.value, "some-descriptor")
+			gotErr := err != nil
+			if gotErr != tt.wantErr {
+				t.Errorf("want error: %t, got %q", tt.wantErr, err)
+			}
+
+			if actual != tt.expect {
+				t.Errorf("want value %q, got %q", tt.expect, actual)
+			}
+		})
 	}
 }

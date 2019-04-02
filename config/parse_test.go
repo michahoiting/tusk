@@ -94,6 +94,24 @@ tasks:
 	},
 
 	{
+		"argument as mapped value",
+		`
+tasks:
+  mytask:
+    args:
+      foo:
+        values: {before: after}
+    run: echo ${foo}
+`,
+		[]string{"before"},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo after"},
+		}},
+	},
+
+	{
 		"option one of the values",
 		`
 tasks:
@@ -110,6 +128,26 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+
+	{
+		"option as mapped value",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        values: {before: after}
+    run: echo ${foo}
+`,
+		[]string{},
+		map[string]string{
+			"foo": "before",
+		},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo after"},
 		}},
 	},
 

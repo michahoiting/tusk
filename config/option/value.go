@@ -88,22 +88,23 @@ type valueWithList struct {
 	ValuesAllowed marshal.ListMap `yaml:"values"`
 }
 
-func (v *valueWithList) validateSpecified(value, descriptor string) error {
+func (v *valueWithList) mappedValue(value, descriptor string) (string, error) {
 	if len(v.ValuesAllowed) == 0 {
-		return nil
+		return value, nil
 	}
 
-	if _, ok := v.ValuesAllowed[value]; !ok {
+	mapped, ok := v.ValuesAllowed[value]
+	if !ok {
 		values := make([]string, 0, len(v.ValuesAllowed))
-		for value := range v.ValuesAllowed {
-			values = append(values, value)
+		for key := range v.ValuesAllowed {
+			values = append(values, key)
 		}
 
-		return fmt.Errorf(
+		return "", fmt.Errorf(
 			`value %q for %s must be one of: %s`,
 			value, descriptor, strings.Join(values, ", "),
 		)
 	}
 
-	return nil
+	return mapped, nil
 }

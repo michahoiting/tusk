@@ -112,11 +112,7 @@ func (o *Option) getValue(vars map[string]string) (string, error) {
 
 	if !o.Private {
 		if value, found := o.getSpecified(); found {
-			if err := o.validateSpecified(value, "option "+o.Name); err != nil {
-				return "", err
-			}
-
-			return value, nil
+			return o.mappedValue(value, "option "+o.Name)
 		}
 	}
 
@@ -128,7 +124,6 @@ func (o *Option) getValue(vars map[string]string) (string, error) {
 }
 
 func (o *Option) getSpecified() (value string, found bool) {
-
 	if o.Passed != "" {
 		return o.Passed, true
 	}
